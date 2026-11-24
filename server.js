@@ -88,6 +88,16 @@ const starterTasks = [
     dependencyCount: 0,
     assigneeRole: "Developer",
     status: "Pending"
+  },
+  {
+    id: "tp-009",
+    title: "Archive last sprint's meeting notes",
+    category: "Documentation",
+    estimatedHours: 1,
+    daysToDeadline: 12,
+    dependencyCount: 0,
+    assigneeRole: "Analyst",
+    status: "Pending"
   }
 ];
 

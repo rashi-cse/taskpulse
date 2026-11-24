@@ -60,7 +60,7 @@ function renderTasks() {
           ? "blue"
           : "violet";
     return `<tr>
-      <td><div class="task-name-cell"><button class="task-check ${task.status === "Completed" ? "checked" : ""}" data-action="toggle" data-id="${escapeHtml(task.id)}" aria-label="${task.status === "Completed" ? "Reopen" : "Complete"} ${escapeHtml(task.title)}">${task.status === "Completed" ? "✓" : ""}</button><div class="task-copy"><span class="task-title ${task.status === "Completed" ? "task-done" : ""}">${escapeHtml(task.title)}</span><span class="task-project"><i class="project-dot ${projectClass}"></i>${escapeHtml(task.category)} · ${task.estimatedHours}h · ${task.dependencyCount} deps</span></div></div></td>
+      <td><div class="task-name-cell"><button class="task-check ${task.status === "Completed" ? "checked" : ""}" data-action="toggle" data-id="${escapeHtml(task.id)}" aria-label="${task.status === "Completed" ? "Reopen" : "Complete"} ${escapeHtml(task.title)}">${task.status === "Completed" ? "✓" : ""}</button><div class="task-copy"><span class="task-title ${task.status === "Completed" ? "task-done" : ""}">${escapeHtml(task.title)}</span><span class="task-project"><i class="project-dot ${projectClass}"></i>${escapeHtml(task.category)} · ${task.estimatedHours}h · ${task.dependencyCount} ${task.dependencyCount === 1 ? "dep" : "deps"}</span></div></div></td>
       <td><span class="priority-pill ${priority}"><i></i>${task.priority}</span></td>
       <td><span class="due-date ${task.daysToDeadline === 0 && task.status !== "Completed" ? "overdue" : ""}">${readableDate(task.daysToDeadline)}</span></td>
       <td><span class="status-pill ${statusClass}">${task.status}</span></td>
@@ -71,7 +71,7 @@ function renderTasks() {
   document.querySelector(".task-table").hidden = visibleTasks.length === 0;
   document.getElementById("table-count").textContent = `Showing ${visibleTasks.length} ${visibleTasks.length === 1 ? "task" : "tasks"}`;
   document.getElementById("all-count").textContent = tasks.length;
-  document.getElementById("nav-count").textContent = tasks.filter((task) => task.status !== "Done").length;
+  document.getElementById("nav-count").textContent = tasks.filter((task) => task.status !== "Completed").length;
   renderStats();
   renderRecommendation();
 }
