@@ -1,0 +1,82 @@
+[
+  {
+    "id": "tp-001",
+    "title": "Finalize Q4 product roadmap",
+    "category": "Development",
+    "estimatedHours": 8,
+    "daysToDeadline": 1,
+    "dependencyCount": 2,
+    "assigneeRole": "Developer",
+    "status": "Pending"
+  },
+  {
+    "id": "tp-002",
+    "title": "Review customer interview notes",
+    "category": "Documentation",
+    "estimatedHours": 3,
+    "daysToDeadline": 1,
+    "dependencyCount": 0,
+    "assigneeRole": "Analyst",
+    "status": "Pending"
+  },
+  {
+    "id": "tp-003",
+    "title": "Prepare sprint planning agenda",
+    "category": "Meeting",
+    "estimatedHours": 2,
+    "daysToDeadline": 2,
+    "dependencyCount": 0,
+    "assigneeRole": "Manager",
+    "status": "Pending"
+  },
+  {
+    "id": "tp-004",
+    "title": "Update onboarding checklist",
+    "category": "Documentation",
+    "estimatedHours": 4,
+    "daysToDeadline": 3,
+    "dependencyCount": 1,
+    "assigneeRole": "Analyst",
+    "status": "Pending"
+  },
+  {
+    "id": "tp-005",
+    "title": "Share weekly progress with team",
+    "category": "Meeting",
+    "estimatedHours": 1,
+    "daysToDeadline": 0,
+    "dependencyCount": 0,
+    "assigneeRole": "Manager",
+    "status": "Completed"
+  },
+  {
+    "id": "tp-006",
+    "title": "Explore dashboard accessibility improvements",
+    "category": "Testing",
+    "estimatedHours": 6,
+    "daysToDeadline": 4,
+    "dependencyCount": 1,
+    "assigneeRole": "Tester",
+    "status": "Pending"
+  },
+  {
+    "id": "tp-007",
+    "title": "Send research follow-up questions",
+    "category": "Documentation",
+    "estimatedHours": 2,
+    "daysToDeadline": 0,
+    "dependencyCount": 0,
+    "assigneeRole": "Analyst",
+    "status": "Pending"
+  },
+  {
+    "id": "tp-008",
+    "title": "Document API integration decisions",
+    "category": "Documentation",
+    "estimatedHours": 5,
+    "daysToDeadline": 5,
+    "dependencyCount": 0,
+    "assigneeRole": "Developer",
+    "status": "Pending"
+  }
+]

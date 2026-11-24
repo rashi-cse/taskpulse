@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7fb">
+    <meta name="description" content="TaskPulse helps you plan focused work with explainable priority recommendations.">
+    <title>TaskPulse — Your workspace</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="TaskPulse home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span>task<span class="brand-light">pulse</span></span>
+        </a>
+        <div class="workspace-label">WORKSPACE</div>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a class="nav-link active" href="#overview"><span class="nav-icon">◫</span> Overview</a>
+          <a class="nav-link" href="#tasks"><span class="nav-icon">▤</span> My tasks <span class="nav-count" id="nav-count">8</span></a>
+          <a class="nav-link" href="#insights"><span class="nav-icon">◌</span> Insights</a>
+        </nav>
+        <div class="projects-heading"><span>TASK CATEGORIES</span></div>
+        <div class="project-list">
+          <a href="#tasks"><i class="project-dot violet"></i> Development</a>
+          <a href="#tasks"><i class="project-dot orange"></i> Testing</a>
+          <a href="#tasks"><i class="project-dot teal"></i> Documentation</a>
+          <a href="#tasks"><i class="project-dot blue"></i> Meetings</a>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="tip-card">
+            <div class="tip-spark">✦</div>
+            <div class="tip-title">Make space for focus</div>
+            <p>Small, intentional steps add up to meaningful progress.</p>
+            <a href="#insights">See your insights <span>→</span></a>
+          </div>
+          <button class="profile-button" type="button">
+            <span class="avatar">RS</span>
+            <span class="profile-text"><strong>Rashi Sharma</strong><small>Personal workspace</small></span>
+            <span class="profile-more">···</span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="main-content" id="overview">
+        <header class="topbar">
+          <div class="breadcrumbs">Workspace <span>/</span> Overview</div>
+          <div class="topbar-actions">
+            <span class="today-label" id="today-label"></span>
+            <button class="icon-button notification-button" type="button" aria-label="Notifications">♧<i></i></button>
+            <span class="top-avatar">RS</span>
+          </div>
+        </header>
+        <section class="welcome-row">
+          <div>
+            <div class="eyebrow"><span class="pulse-dot"></span> TODAY</div>
+            <h1>Make today count, Rashi <span class="wave">✦</span></h1>
+            <p class="welcome-copy">Your work, sorted by what matters. Pick a priority and make a little progress.</p>
+          </div>
+          <button class="primary-button" id="new-task-button" type="button"><span>＋</span> New task</button>
+        </section>
+
+        <section class="stat-grid" aria-label="Task overview">
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Total tasks</span><span class="stat-icon indigo-icon">▤</span></div>
+            <div class="stat-value" id="total-tasks">08</div>
+            <div class="stat-foot"><span class="stat-muted">Across your workspace</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Completed</span><span class="stat-icon green-icon">✓</span></div>
+            <div class="stat-value" id="completed-tasks">01</div>
+            <div class="stat-foot"><span class="mini-progress"><i id="completion-bar"></i></span><span id="completion-copy">12% of all tasks</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-label">Due today</span><span class="stat-icon amber-icon">◷</span></div>
+            <div class="stat-value" id="due-today">02</div>
+            <div class="stat-foot"><span class="priority-mini"></span><span id="today-priority-copy">1 high priority</span></div>
+          </article>
+          <article class="stat-card focus-stat">
+            <div class="stat-top"><span class="stat-label">High priority</span><span class="stat-icon violet-icon">✳</span></div>
+            <div class="stat-value" id="high-priority">04</div>
+            <div class="stat-foot"><span class="score-trend">Needs attention</span><span>open tasks</span></div>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <div class="tasks-panel panel" id="tasks">
+            <div class="panel-heading">
+              <div><h2>Your tasks</h2><p>Stay on top of what matters most.</p></div>
+              <button class="text-button" id="view-all-button" type="button">View all <span>→</span></button>
+            </div>
+            <div class="task-toolbar">
+              <div class="filter-tabs" role="tablist" aria-label="Filter tasks">
+                <button class="filter-tab selected" data-filter="all" role="tab" aria-selected="true">All <span id="all-count">8</span></button>
+                <button class="filter-tab" data-filter="pending" role="tab" aria-selected="false">Pending</button>
+                <button class="filter-tab" data-filter="done" role="tab" aria-selected="false">Completed</button>
+              </div>
+              <label class="search-box"><span>⌕</span><input id="task-search" type="search" placeholder="Search tasks" aria-label="Search tasks"></label>
+            </div>
+            <div class="task-table-wrap">
+              <table class="task-table">
+                <thead><tr><th>TASK</th><th>PRIORITY</th><th>DEADLINE</th><th>STATUS</th><th></th></tr></thead>
+                <tbody id="task-rows"></tbody>
+              </table>
+              <div class="empty-state" id="empty-state" hidden>No tasks match this view. Try another filter or create a task.</div>
+            </div>
+            <div class="table-footer"><span id="table-count">Showing 8 tasks</span><span>Sorted by recommended priority <span class="sort-glyph">↕</span></span></div>
+          </div>
+
+          <aside class="right-column">
+            <section class="priority-card panel">
+              <div class="priority-title-row"><div class="ai-badge">✦</div><div><h2>Priority insights</h2><p>Powered by your task signals</p></div><span class="live-pill">LIVE</span></div>
+              <div class="insight-feature">
+                <div class="insight-overline">YOUR NEXT BEST STEP</div>
+                <div class="insight-task" id="next-best-task">Finalize Q4 product roadmap</div>
+                <div class="insight-reason"><span class="reason-dot"></span><span id="next-best-reason">High importance and due today</span></div>
+                <div class="recommendation-footer"><span>Recommended priority</span><strong id="next-best-score">High</strong></div>
+              </div>
+              <div class="insight-note"><span>✦</span> Recommendations consider deadline, estimated effort, and task category.</div>
+            </section>
+
+            <section class="week-card panel" id="insights">
+              <div class="panel-heading compact-heading"><div><h2>Priority mix</h2><p>Open tasks by recommended priority.</p></div><span class="mix-icon">✳</span></div>
+              <div class="priority-mix">
+                <div class="mix-row"><span><i class="mix-dot high-dot"></i>High</span><strong id="mix-high-count">0</strong><div class="mix-track"><i id="mix-high-bar" class="high-fill"></i></div></div>
+                <div class="mix-row"><span><i class="mix-dot medium-dot"></i>Medium</span><strong id="mix-medium-count">0</strong><div class="mix-track"><i id="mix-medium-bar" class="medium-fill"></i></div></div>
+                <div class="mix-row"><span><i class="mix-dot low-dot"></i>Low</span><strong id="mix-low-count">0</strong><div class="mix-track"><i id="mix-low-bar" class="low-fill"></i></div></div>
+              </div>
+              <div class="weekly-summary"><span><i class="legend-dot"></i> Active tasks</span><strong id="active-task-count">7</strong></div>
+            </section>
+          </aside>
+        </section>
+        <footer class="page-footer"><span>TaskPulse <span class="footer-dot">·</span> Make every task count.</span><span><a href="#insights">How prioritization works</a><span class="footer-dot">·</span> All changes saved automatically</span></footer>
+      </main>
+    </div>
+
+    <dialog class="task-dialog" id="task-dialog">
+      <form id="task-form" method="dialog">
+        <div class="dialog-heading"><div><span class="dialog-kicker">TASK DETAILS</span><h2>Create a task</h2><p>Add a little context and TaskPulse will recommend a priority.</p></div><button class="dialog-close" type="button" id="close-dialog" aria-label="Close">×</button></div>
+        <label class="form-field">Task name<input name="title" required maxlength="120" placeholder="e.g. Prepare project update"></label>
+        <div class="form-row">
+          <label class="form-field">Category<select name="category"><option>Development</option><option>Testing</option><option>Documentation</option><option>Meeting</option></select></label>
+          <label class="form-field">Days to deadline<input name="daysToDeadline" type="number" min="0" max="365" value="2" required></label>
+        </div>
+        <div class="form-row rating-row">
+          <label class="form-field">Estimated hours<input name="estimatedHours" type="number" min="0.5" max="40" step="0.5" value="2" required></label>
+          <label class="form-field">Dependencies<input name="dependencyCount" type="number" min="0" max="50" value="0" required></label>
+          <label class="form-field">Assignee role<select name="assigneeRole"><option>Developer</option><option>Tester</option><option>Analyst</option><option>Manager</option></select></label>
+        </div>
+        <label class="form-field">Status<select name="status"><option>Pending</option><option>Completed</option></select></label>
+        <div class="form-error" id="form-error" role="alert"></div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" id="cancel-dialog">Cancel</button><button class="primary-button" type="submit">Create task <span>→</span></button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "taskpulse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A local task planning dashboard with explainable priority recommendations",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
