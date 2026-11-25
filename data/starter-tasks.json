@@ -1,6 +1,5 @@
 [
   {
-    "id": "tp-001",
     "title": "Finalize Q4 product roadmap",
     "category": "Development",
     "estimatedHours": 8,
@@ -10,7 +9,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-002",
     "title": "Review customer interview notes",
     "category": "Documentation",
     "estimatedHours": 3,
@@ -20,7 +18,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-003",
     "title": "Prepare sprint planning agenda",
     "category": "Meeting",
     "estimatedHours": 2,
@@ -30,7 +27,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-004",
     "title": "Update onboarding checklist",
     "category": "Documentation",
     "estimatedHours": 4,
@@ -40,7 +36,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-005",
     "title": "Share weekly progress with team",
     "category": "Meeting",
     "estimatedHours": 1,
@@ -50,7 +45,6 @@
     "status": "Completed"
   },
   {
-    "id": "tp-006",
     "title": "Explore dashboard accessibility improvements",
     "category": "Testing",
     "estimatedHours": 6,
@@ -60,7 +54,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-007",
     "title": "Send research follow-up questions",
     "category": "Documentation",
     "estimatedHours": 2,
@@ -70,7 +63,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-008",
     "title": "Document API integration decisions",
     "category": "Documentation",
     "estimatedHours": 5,
@@ -80,7 +72,6 @@
     "status": "Pending"
   },
   {
-    "id": "tp-009",
     "title": "Archive last sprint's meeting notes",
     "category": "Documentation",
     "estimatedHours": 1,

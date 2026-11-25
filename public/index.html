@@ -9,7 +9,31 @@
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
-    <div class="app-shell">
+    <section class="auth-screen" id="auth-screen">
+      <div class="auth-card">
+        <a class="brand auth-brand" href="/" aria-label="TaskPulse home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span>task<span class="brand-light">pulse</span></span>
+        </a>
+        <p class="auth-kicker">YOUR PERSONAL WORKSPACE</p>
+        <h1 id="auth-heading">Welcome back</h1>
+        <p class="auth-description">Sign in to see your tasks and keep your work in sync.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Account options">
+          <button class="auth-tab active" type="button" data-mode="login">Sign in</button>
+          <button class="auth-tab" type="button" data-mode="register">Create account</button>
+        </div>
+        <form id="auth-form">
+          <label class="form-field auth-name-field" hidden>Name<input name="name" autocomplete="name" minlength="2" maxlength="60"></label>
+          <label class="form-field">Email<input name="email" type="email" required autocomplete="email" placeholder="you@example.com"></label>
+          <label class="form-field">Password<input name="password" type="password" required minlength="8" maxlength="128" autocomplete="current-password" placeholder="At least 8 characters"></label>
+          <div class="form-error" id="auth-error" role="alert"></div>
+          <button class="primary-button auth-submit" type="submit" id="auth-submit">Sign in <span>→</span></button>
+        </form>
+        <p class="auth-privacy">Your tasks are private to your account.</p>
+      </div>
+    </section>
+
+    <div class="app-shell" id="app-shell" hidden>
       <aside class="sidebar">
         <a class="brand" href="/" aria-label="TaskPulse home">
           <span class="brand-mark"><span></span><span></span><span></span></span>
@@ -37,7 +61,7 @@
           </div>
           <button class="profile-button" type="button">
             <span class="avatar">R</span>
-            <span class="profile-text"><strong>Rashi</strong><small>Personal workspace</small></span>
+            <span class="profile-text"><strong id="profile-name">Rashi</strong><small>Personal workspace</small></span>
             <span class="profile-more">···</span>
           </button>
         </div>
@@ -49,6 +73,7 @@
           <div class="topbar-actions">
             <span class="today-label" id="today-label"></span>
             <button class="icon-button notification-button" type="button" aria-label="Notifications">♧<i></i></button>
+            <button class="logout-button" id="logout-button" type="button">Sign out</button>
             <span class="top-avatar">R</span>
           </div>
         </header>
@@ -137,7 +162,7 @@
 
     <dialog class="task-dialog" id="task-dialog">
       <form id="task-form" method="dialog">
-        <div class="dialog-heading"><div><span class="dialog-kicker">TASK DETAILS</span><h2>Create a task</h2><p>Add a little context and TaskPulse will recommend a priority.</p></div><button class="dialog-close" type="button" id="close-dialog" aria-label="Close">×</button></div>
+        <div class="dialog-heading"><div><span class="dialog-kicker">TASK DETAILS</span><h2 id="task-dialog-title">Create a task</h2><p>Add a little context and TaskPulse will recommend a priority.</p></div><button class="dialog-close" type="button" id="close-dialog" aria-label="Close">×</button></div>
         <label class="form-field">Task name<input name="title" required maxlength="120" placeholder="e.g. Prepare project update"></label>
         <div class="form-row">
           <label class="form-field">Category<select name="category"><option>Development</option><option>Testing</option><option>Documentation</option><option>Meeting</option></select></label>
@@ -150,7 +175,7 @@
         </div>
         <label class="form-field">Status<select name="status"><option>Pending</option><option>Completed</option></select></label>
         <div class="form-error" id="form-error" role="alert"></div>
-        <div class="dialog-actions"><button class="secondary-button" type="button" id="cancel-dialog">Cancel</button><button class="primary-button" type="submit">Create task <span>→</span></button></div>
+        <div class="dialog-actions"><button class="secondary-button" type="button" id="cancel-dialog">Cancel</button><button class="primary-button" type="submit" id="task-submit">Create task <span>→</span></button></div>
       </form>
     </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>

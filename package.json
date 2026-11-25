@@ -2,8 +2,18 @@
   "name": "taskpulse",
   "version": "1.0.0",
   "private": true,
-  "description": "A local task planning dashboard with explainable priority recommendations",
+  "description": "A task planning dashboard with MongoDB persistence and JWT authentication",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed:demo": "node scripts/seed-demo.js",
+    "migrate:json": "node scripts/migrate-json.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.1"
   }
 }

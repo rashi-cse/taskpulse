@@ -1,52 +1,80 @@
 # TaskPulse
 
-A small, locally runnable task-prioritization dashboard. It includes a Node.js
-API, a responsive browser UI, editable example tasks, and a transparent
-rule-based priority recommendation. There are no external services or npm
-dependencies.
+TaskPulse is a responsive task-priority dashboard built with Node.js, Express,
+MongoDB/Mongoose, and browser JavaScript. Accounts use bcrypt password hashes
+and JWT bearer tokens; every task query and mutation is scoped to the signed-in
+user.
 
-## Run it
+## Setup
 
-1. Install Node.js 18 or later.
-2. From this folder, run `npm start`.
-3. Open <http://localhost:3000>.
+1. Install Node.js 18+ and have MongoDB running locally, or create a MongoDB
+   Atlas database.
+2. From this folder, install dependencies and create your environment file:
 
-The first run creates `data/tasks.json` with example tasks. Changes to tasks are
-saved there and remain available after restarting the app. Remove that file to
-restore the original examples.
+   ```sh
+   npm install
+   cp .env.example .env
+   ```
 
-## How priority is recommended
+3. Set `MONGO_URI` to your MongoDB connection string and replace `JWT_SECRET`
+   with a private random secret of at least 32 characters. Keep `.env` private.
+4. Start the server and open <http://localhost:3000>:
 
-The local API applies the same transparent fallback rule described in the
-sample report:
+   ```sh
+   npm start
+   ```
 
-- High when the deadline is within one day, or within three days for tasks of
-  six or more estimated hours
-- Medium when the deadline is within five days, or the category is Development
-- Low otherwise
+5. Choose **Create account** in the app. Each account sees only its own tasks.
 
-This is a deterministic rule-based fallback, not a trained machine-learning
-model. The app currently uses a local JSON file rather than MongoDB, and does
-not yet include React, user authentication, or the Python inference service.
-The starter tasks are illustrative and synthetic; do not describe them as real
-user data or claim model accuracy. Update the report to distinguish these
-implemented features from planned extensions.
+For an illustrative report/demo account with synthetic starter tasks, set
+`DEMO_NAME`, `DEMO_EMAIL`, and `DEMO_PASSWORD` in `.env`, then run
+`npm run seed:demo`. The script creates the account if needed and seeds the
+sample tasks only if that account has no tasks. These examples are not real
+user data.
 
-## Features
+To import an existing `data/tasks.json` into a registered MongoDB account, set
+`MIGRATION_EMAIL` in `.env` and run `npm run migrate:json`. To select a backup
+at another path, also set `LEGACY_TASKS_FILE`. Back up `data/tasks.json` before
+pulling this MongoDB upgrade if it contains task changes; Git removes the
+tracked JSON sample as part of the upgrade. The migration stops if the selected
+account already has tasks and leaves the source JSON unchanged.
 
-- Overview metrics and a priority-ranked task list
-- Search and All / Pending / Completed filters
-- Add tasks, mark tasks complete, and remove tasks
-- Persistent local JSON storage and server-side validation
-- Priority explanation and live counts by priority
+## Tests
+
+Run the API/auth tests with Node's built-in test runner:
+
+```sh
+npm test
+```
+
+Tests use in-memory repositories and do not require a MongoDB server.
 
 ## API
 
-- `GET /api/tasks` — list tasks with score and priority
-- `POST /api/tasks` — create a task
-- `PATCH /api/tasks/:id` — update task fields
-- `DELETE /api/tasks/:id` — remove a task
+All task endpoints require `Authorization: Bearer <JWT>`. Registration and
+login are public.
 
-For report screenshots, run the app locally and capture the browser window. The
-dashboard counts and task recommendations are calculated from the data returned
-by the local API; update any report tables with values from that run.
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | Public | Create an account with a bcrypt-hashed password |
+| POST | `/api/auth/login` | Public | Verify credentials and issue a JWT |
+| GET | `/api/auth/me` | JWT | Return the authenticated account |
+| GET | `/api/tasks` | JWT | List only the current user's tasks |
+| POST | `/api/tasks` | JWT | Validate and create a task with recommended priority |
+| PATCH | `/api/tasks/:id` | JWT | Edit task details or set status to Pending/Completed |
+| DELETE | `/api/tasks/:id` | JWT | Delete a task owned by the current user |
+
+Task fields: `title`, `category` (Development, Testing, Documentation, Meeting),
+`estimatedHours` (0.5–40), `daysToDeadline` (0–365), `dependencyCount` (0–50),
+`assigneeRole` (Developer, Tester, Analyst, Manager), and `status` (Pending or
+Completed).
+
+## Priority recommendation and scope
+
+The current priority recommendation is a deterministic rule-based fallback:
+High when due within one day or within three days with at least six estimated
+hours; Medium when due within five days or for Development; Low otherwise. It is
+not a trained ML model. No accuracy or confidence claim should be reported.
+The dashboard frontend is plain browser JavaScript (not React); MongoDB,
+Express, JWT authentication, bcrypt hashing, CRUD, and automated API tests are
+implemented.

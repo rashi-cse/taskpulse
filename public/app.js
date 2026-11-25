@@ -3,12 +3,16 @@ const emptyState = document.getElementById("empty-state");
 const dialog = document.getElementById("task-dialog");
 const taskForm = document.getElementById("task-form");
 const toast = document.getElementById("toast");
+const authForm = document.getElementById("auth-form");
 const today = new Date();
 const todayKey = formatDate(today);
 let tasks = [];
 let currentFilter = "all";
 let searchTerm = "";
 let toastTimer;
+let authMode = "login";
+let editingTaskId = null;
+let token = localStorage.getItem("taskpulse-token");
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -64,7 +68,7 @@ function renderTasks() {
       <td><span class="priority-pill ${priority}"><i></i>${task.priority}</span></td>
       <td><span class="due-date ${task.daysToDeadline === 0 && task.status !== "Completed" ? "overdue" : ""}">${readableDate(task.daysToDeadline)}</span></td>
       <td><span class="status-pill ${statusClass}">${task.status}</span></td>
-      <td class="action-cell"><button class="row-menu" data-action="menu" data-id="${escapeHtml(task.id)}" aria-label="Task options">···</button></td>
+      <td class="action-cell"><div class="row-actions"><button class="row-action" data-action="edit" data-id="${escapeHtml(task.id)}" aria-label="Edit ${escapeHtml(task.title)}">Edit</button><button class="row-action delete-action" data-action="delete" data-id="${escapeHtml(task.id)}" aria-label="Delete ${escapeHtml(task.title)}">Delete</button></div></td>
     </tr>`;
   }).join("");
   emptyState.hidden = visibleTasks.length > 0;
@@ -128,20 +132,29 @@ function renderRecommendation() {
 }
 
 async function loadTasks() {
-  const response = await fetch("/api/tasks");
-  if (!response.ok) throw new Error("Could not load tasks from the local server.");
-  tasks = await response.json();
+  tasks = await apiRequest("/api/tasks");
   renderTasks();
 }
 
+async function apiRequest(url, options = {}) {
+  const headers = { ...(options.headers || {}) };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (options.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+  const response = await fetch(url, { ...options, headers });
+  if (response.status === 204) return null;
+  const result = await response.json();
+  if (!response.ok) {
+    if (response.status === 401 && token) signOut();
+    throw new Error(result.error || "The request could not be completed.");
+  }
+  return result;
+}
+
 async function updateTask(id, changes) {
-  const response = await fetch(`/api/tasks/${encodeURIComponent(id)}`, {
+  const result = await apiRequest(`/api/tasks/${encodeURIComponent(id)}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(changes)
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || "Could not update task.");
   await loadTasks();
   return result;
 }
@@ -179,29 +192,38 @@ taskRows.addEventListener("click", async (event) => {
     if (button.dataset.action === "toggle") {
       await updateTask(task.id, { status: task.status === "Completed" ? "Pending" : "Completed" });
       showToast(task.status === "Completed" ? "Task moved back to your list." : "Nice work — task completed.");
-    } else {
-      const action = window.prompt(`Task options for “${task.title}”\nType "done" to complete or "delete" to remove it.`);
-      if (action?.toLowerCase() === "done") {
-        await updateTask(task.id, { status: "Done" });
-        showToast("Task marked as complete.");
-      } else if (action?.toLowerCase() === "delete") {
-        const response = await fetch(`/api/tasks/${encodeURIComponent(task.id)}`, { method: "DELETE" });
-        if (!response.ok) throw new Error("Could not delete task.");
-        await loadTasks();
-        showToast("Task deleted.");
-      }
+    } else if (button.dataset.action === "edit") {
+      openTaskDialog(task);
+    } else if (button.dataset.action === "delete" &&
+        window.confirm(`Delete “${task.title}”? This cannot be undone.`)) {
+      await apiRequest(`/api/tasks/${encodeURIComponent(task.id)}`, { method: "DELETE" });
+      await loadTasks();
+      showToast("Task deleted.");
     }
   } catch (error) {
     showToast(error.message);
   }
 });
 
-document.getElementById("new-task-button").addEventListener("click", () => {
+function openTaskDialog(task = null) {
+  editingTaskId = task?.id || null;
   taskForm.reset();
-  taskForm.elements.daysToDeadline.value = 2;
   document.getElementById("form-error").textContent = "";
+  document.getElementById("task-dialog-title").textContent = task ? "Edit task" : "Create a task";
+  document.getElementById("task-submit").innerHTML = task ? "Save changes <span>→</span>" : "Create task <span>→</span>";
+  if (task) {
+    for (const field of ["title", "category", "estimatedHours", "daysToDeadline", "dependencyCount", "assigneeRole", "status"]) {
+      taskForm.elements[field].value = task[field];
+    }
+  } else {
+    taskForm.elements.daysToDeadline.value = 2;
+  }
   dialog.showModal();
   taskForm.elements.title.focus();
+}
+
+document.getElementById("new-task-button").addEventListener("click", () => {
+  openTaskDialog();
 });
 
 function closeDialog() {
@@ -215,19 +237,17 @@ taskForm.addEventListener("submit", async (event) => {
   const formData = new FormData(taskForm);
   const task = Object.fromEntries(formData.entries());
   for (const key of ["estimatedHours", "daysToDeadline", "dependencyCount"]) task[key] = Number(task[key]);
-  const response = await fetch("/api/tasks", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(task)
-  });
-  const result = await response.json();
-  if (!response.ok) {
-    document.getElementById("form-error").textContent = result.error || "Could not create task.";
-    return;
+  try {
+    const result = await apiRequest(
+      editingTaskId ? `/api/tasks/${encodeURIComponent(editingTaskId)}` : "/api/tasks",
+      { method: editingTaskId ? "PATCH" : "POST", body: JSON.stringify(task) }
+    );
+    await loadTasks();
+    closeDialog();
+    showToast(editingTaskId ? "Task updated." : `Task added · ${result.priority} priority recommendation`);
+  } catch (error) {
+    document.getElementById("form-error").textContent = error.message;
   }
-  await loadTasks();
-  closeDialog();
-  showToast(`Task added · ${result.priority} priority recommendation`);
 });
 
 document.getElementById("view-all-button").addEventListener("click", () => {
@@ -235,7 +255,79 @@ document.getElementById("view-all-button").addEventListener("click", () => {
   document.querySelector('[data-filter="all"]').click();
 });
 
-loadTasks().catch((error) => {
-  document.querySelector(".task-table-wrap").innerHTML =
-    `<div class="load-error">${escapeHtml(error.message)} Refresh the page after starting the local server.</div>`;
+function setAuthMode(mode) {
+  authMode = mode;
+  const registering = mode === "register";
+  document.querySelector(".auth-name-field").hidden = !registering;
+  authForm.elements.name.required = registering;
+  authForm.elements.password.autocomplete = registering ? "new-password" : "current-password";
+  document.getElementById("auth-heading").textContent = registering ? "Create your account" : "Welcome back";
+  document.querySelector(".auth-description").textContent = registering
+    ? "Create an account to keep your tasks private and in sync."
+    : "Sign in to see your tasks and keep your work in sync.";
+  document.getElementById("auth-submit").innerHTML = registering ? "Create account <span>→</span>" : "Sign in <span>→</span>";
+  document.querySelectorAll(".auth-tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.mode === mode));
+  document.getElementById("auth-error").textContent = "";
+}
+
+function showDashboard(user) {
+  document.getElementById("auth-screen").hidden = true;
+  document.getElementById("app-shell").hidden = false;
+  document.getElementById("profile-name").textContent = user.name;
+  const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  document.querySelector(".top-avatar").textContent = initials;
+  document.querySelector(".avatar").textContent = initials;
+}
+
+function signOut() {
+  token = null;
+  localStorage.removeItem("taskpulse-token");
+  tasks = [];
+  document.getElementById("app-shell").hidden = true;
+  document.getElementById("auth-screen").hidden = false;
+  authForm.reset();
+  taskRows.innerHTML = "";
+}
+
+document.querySelectorAll(".auth-tab").forEach((tab) => {
+  tab.addEventListener("click", () => setAuthMode(tab.dataset.mode));
 });
+
+authForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = Object.fromEntries(new FormData(authForm).entries());
+  document.getElementById("auth-error").textContent = "";
+  try {
+    const result = await apiRequest(`/api/auth/${authMode === "register" ? "register" : "login"}`, {
+      method: "POST",
+      body: JSON.stringify(form)
+    });
+    token = result.token;
+    localStorage.setItem("taskpulse-token", token);
+    showDashboard(result.user);
+  } catch (error) {
+    document.getElementById("auth-error").textContent = error.message;
+    return;
+  }
+  try {
+    await loadTasks();
+  } catch (error) {
+    showToast(error.message);
+  }
+});
+
+document.getElementById("logout-button").addEventListener("click", signOut);
+
+async function initialize() {
+  if (!token) return;
+  try {
+    const user = await apiRequest("/api/auth/me");
+    showDashboard(user);
+    await loadTasks();
+  } catch (error) {
+    console.error("Could not restore the signed-in session:", error.message);
+    signOut();
+  }
+}
+
+initialize();
